@@ -6,8 +6,8 @@ import (
 
 func (s *server) initRoutes(c *controller.Controller) {
 	s.e.POST("/car", c.CreateCar)
-	s.e.PUT("/car/:carId", c.UpdateCar)
-	s.e.DELETE("/car/:carId", c.DeleteCar)
-	s.e.GET("/car/:carId", c.GetCar)
+	s.e.PUT("/car/:carID", c.UpdateCar)
+	s.e.DELETE("/car/:carID", c.DeleteCar)
+	s.e.GET("/car/:carID", c.GetCar)
 	s.e.GET("/car/list", c.ListCars)
 }

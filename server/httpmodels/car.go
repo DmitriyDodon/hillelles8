@@ -26,7 +26,6 @@ func (ccr *CarCreateRequest) Validate() error {
 	err := validate.Struct(ccr)
 	if err != nil {
 		return err
-
 	}
 
 	return nil

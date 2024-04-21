@@ -18,31 +18,26 @@ func InnitConfig() (*Config, error) {
 	err := godotenv.Load("../.env")
 
 	if err != nil {
-		return &Config{}, err
+		return nil, err
 	}
 
 	port, err := goDotEnvIntVariable("SEVER_PORT")
 
 	if err != nil {
-		return &Config{}, err
+		return nil, err
 	}
 
 	return &Config{
-		port:       port,
-		sqlDriver:  goDotEnvStringVariable("DB_DRIVER"),
-		dbFilePath: goDotEnvStringVariable("DB_FILE_PATH"),
-		migrationPath: goDotEnvStringVariable("MIGRATION_PATH"),
+		port:          port,
+		sqlDriver:     os.Getenv("DB_DRIVER"),
+		dbFilePath:    os.Getenv("DB_FILE_PATH"),
+		migrationPath: os.Getenv("MIGRATION_PATH"),
 	}, nil
-}
-
-func goDotEnvStringVariable(key string) string {
-	return os.Getenv(key)
 }
 
 func goDotEnvIntVariable(key string) (int, error) {
 	s := os.Getenv(key)
 	v, err := strconv.Atoi(s)
-
 	if err != nil {
 		return 0, err
 	}

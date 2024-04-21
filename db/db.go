@@ -26,21 +26,21 @@ func NewConnection(config *config.Config) (*DBConnection, error) {
 
 func (d DBConnection) Execute(query string, args ...any) (sql.Result, error) {
 	if len(args) > 0 {
-		return d.connection.Exec(query, args)
+		return d.connection.Exec(query, args...)
 	}
 	return d.connection.Exec(query)
 }
 
 func (d DBConnection) Query(query string, args ...any) (*sql.Rows, error) {
 	if len(args) > 0 {
-		return d.connection.Query(query, args)
+		return d.connection.Query(query, args...)
 	}
 	return d.connection.Query(query)
 }
 
 func (d DBConnection) QueryRow(query string, args ...any) *sql.Row {
 	if len(args) > 0 {
-		return d.connection.QueryRow(query, args)
+		return d.connection.QueryRow(query, args...)
 	}
 	return d.connection.QueryRow(query)
 }

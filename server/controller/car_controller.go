@@ -25,7 +25,7 @@ func (con Controller) CreateCar(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	query := fmt.Sprintf("insert into cars (id, color, price_in_cents, max_speed_mph, max_speed_kmp, vendor_name, model_name) values ('%s', '%s', %d, %d, %d, '%s', '%s')",
+	_, err = con.dbConnection.Execute("insert into cars (id, color, price_in_cents, max_speed_mph, max_speed_kmp, vendor_name, model_name) values (?, ?, ?, ?, ?, ?, ?)",
 		uuid.Must(uuid.NewRandom()).String(),
 		req.Color,
 		req.PriceInCents,
@@ -34,8 +34,6 @@ func (con Controller) CreateCar(c echo.Context) error {
 		req.VendorName,
 		req.ModelName,
 	)
-
-	_, err = con.dbConnection.Execute(query)
 
 	if err != nil {
 		log.Error(err.Error())
@@ -46,7 +44,7 @@ func (con Controller) CreateCar(c echo.Context) error {
 }
 
 func (con Controller) UpdateCar(c echo.Context) error {
-	carId := c.Param("carId")
+	carID := c.Param("carID")
 
 	req := new(httpmodels.CarCreateRequest)
 
@@ -62,17 +60,15 @@ func (con Controller) UpdateCar(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	query := fmt.Sprintf("update cars set color = '%s', price_in_cents = '%d', max_speed_mph = '%d', max_speed_kmp = '%d', vendor_name = '%s', model_name = '%s' where id = '%s'",
+	_, err = con.dbConnection.Execute("update cars set color = ?, price_in_cents = ?, max_speed_mph = ?, max_speed_kmp = ?, vendor_name = ?, model_name = ? where id = ?",
 		req.Color,
 		req.PriceInCents,
 		req.MaxSpeedMPH,
 		req.MaxSpeedKMP,
 		req.VendorName,
 		req.ModelName,
-		carId,
+		carID,
 	)
-
-	_, err = con.dbConnection.Execute(query)
 
 	if err != nil {
 		log.Error(err.Error())
@@ -83,9 +79,9 @@ func (con Controller) UpdateCar(c echo.Context) error {
 }
 
 func (con Controller) DeleteCar(c echo.Context) error {
-	carId := c.Param("carId")
+	carID := c.Param("carID")
 
-	_, err := con.dbConnection.Execute(fmt.Sprintf("delete from cars where id = '%s'", carId))
+	_, err := con.dbConnection.Execute("delete from cars where id = ?", carID)
 
 	if err != nil {
 		log.Error(err.Error())
@@ -96,14 +92,15 @@ func (con Controller) DeleteCar(c echo.Context) error {
 }
 
 func (con Controller) GetCar(c echo.Context) error {
-	carId := c.Param("carId")
-	carRow := con.dbConnection.QueryRow(fmt.Sprintf("select * from cars where id = '%s'", carId))
+	carID := c.Param("carID")
+	carRow := con.dbConnection.QueryRow("select * from cars where id = ?", carID)
 
 	car := new(httpmodels.CarResponse)
 
 	err := carRow.Scan(&car.Id, &car.Color, &car.PriceInCents, &car.MaxSpeedMPH, &car.MaxSpeedKMP, &car.VendorName, &car.ModelName, &car.DateCreatedAt)
 
 	if err != nil {
+		fmt.Println(err)
 		return c.JSON(http.StatusNotFound, httpmodels.NotFoundError)
 	}
 
@@ -111,7 +108,7 @@ func (con Controller) GetCar(c echo.Context) error {
 }
 
 func (con Controller) ListCars(c echo.Context) error {
-	carRows, err := con.dbConnection.Query(fmt.Sprintf("select * from cars"))
+	carRows, err := con.dbConnection.Query("select * from cars")
 
 	if err != nil {
 		log.Error(err.Error())
