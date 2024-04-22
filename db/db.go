@@ -6,6 +6,7 @@ import (
 	"os"
 
 	_ "github.com/mattn/go-sqlite3"
+	log "github.com/sirupsen/logrus"
 )
 
 type DBConnection struct {
@@ -52,6 +53,7 @@ func (d DBConnection) Close() {
 func (d DBConnection) RunQueryFromFile(filePath string) (sql.Result, error) {
 	dat, err := os.ReadFile(filePath)
 	if err != nil {
+		log.Error(err)
 		return nil, err
 	}
 	return d.connection.Exec(string(dat))
